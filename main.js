@@ -1,21 +1,14 @@
 import './style.css';
 import * as THREE from "three";
 
-import {OBJLoader} from "three/addons/loaders/OBJLoader.js"
-import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js"
+
+
 const clock = new THREE.Clock();
 let scene, camera, light1, light2, object, renderer;
 
-
-const metalMaterial = new THREE.MeshStandardMaterial({
-    roughness:0,
-    metalness: 0.40,
-    color: 0xffffff,
-});
-
 init();
 animate();
-
 
 
 function init(){
@@ -24,41 +17,39 @@ function init(){
     //RENDERER
     renderer = new THREE.WebGLRenderer();
     renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.setClearColor(0x303030, 1);
     document.querySelector('.container-canvas').appendChild( renderer.domElement );
 
     //CAMERA
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-    camera.position.set(0,0, 10)
+    camera.position.set(0,0, 2)
 
-    const loader = new OBJLoader();
-    loader.load("/golfball2.obj", function(obj){
-        object = obj.children[0];
+    const loader = new GLTFLoader();
+    loader.load("/first.glb", function(obj){
+        object = obj.scene;
         console.log(object)
-        object.material = metalMaterial;
-        object.scale.multiplyScalar(1.3);
 		scene.add( object );
     })
-    const gui = new GUI();
-    gui.add(metalMaterial, 'metalness', 0, 1);
-    gui.add(metalMaterial, 'roughness', 0, 1);
 
     //LIGHT1
-    light1 = new THREE.PointLight( 0x000000, 1, 100 );
+    light1 = new THREE.PointLight( 0x000000, 4, 100 );
     light1.position.set( 10, 30, 10 );
     scene.add(light1);
     //LIGHT2
-    light2 = new THREE.PointLight( 0xffffff, 0.14, 50);
+    light2 = new THREE.PointLight( 0xffffff, 1, 50);
     light2.position.set(-10, -11, 10);
     scene.add(light2);
-}
 
+
+    renderer.toneMapping = THREE.sRGBEncoding
+    renderer.outputEncoding = THREE.sRGBEncoding
+}
 
 
 window.onresize = function () {
 
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-
     renderer.setSize( window.innerWidth, window.innerHeight );
 
 };
